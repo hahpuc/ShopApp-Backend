@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import RefreshToken from "../models/refreshToken.js";
 
 import UserModal from "../models/user.js";
 import { createUserCart } from "./cart.js";
+
+// let refreshTokens = [];
 
 export const signin = async (req, res) => {
     const { email, password } = req.body;
@@ -16,23 +19,27 @@ export const signin = async (req, res) => {
         });
 
         const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
-
         if (!isPasswordCorrect) return res.status(400).json({
             code: 400,
             message: "Invalid credentials"
         });
 
-        const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, process.env.AUTH_KEY, { expiresIn: "1h" });
+        const token = generateAccessToken({ email: oldUser.email, id: oldUser._id });
+        // refreshTokens.push(token.refreshToken)
 
-        res.status(200).json({
+        const newRefreshToken = new RefreshToken({ token: token.refreshToken });
+        await newRefreshToken.save();
+
+        return res.status(200).json({
             code: 200,
             data: {
                 result: oldUser,
-                token
+                accessToken: token.accessToken,
+                refreshToken: token.refreshToken,
             },
         });
-    } catch (err) {
-        res.status(400).json({
+    } catch (error) {
+        return res.status(400).json({
             code: 400,
             message: error.message
         });
@@ -51,16 +58,12 @@ export const signup = async (req, res) => {
         });
 
         const hashedPassword = await bcrypt.hash(password, 12);
-
         const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
-
-        const token = jwt.sign({ email: result.email, id: result._id }, process.env.AUTH_KEY, { expiresIn: "1h" });
 
         res.status(201).json({
             code: 201,
             data: {
                 result,
-                token
             },
         });
 
@@ -72,6 +75,47 @@ export const signup = async (req, res) => {
         });
     }
 };
+
+const generateAccessToken = (user) => {
+    const accessToken = jwt.sign(user, process.env.AUTH_KEY, { expiresIn: "45s" });
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
+
+    return {
+        accessToken,
+        refreshToken,
+    }
+}
+
+
+export const refreshToken = async (req, res) => {
+    const refreshToken = req.body.refreshToken;
+
+    if (refreshToken == null) return res.status(401).json({ code: 401, message: "Refresh token was null" });
+
+    const isExistToken = await RefreshToken.findOne({ token: refreshToken });
+    if (!isExistToken) return res.status(403).json({ code: 403, message: "Not authentication!" })
+
+    await RefreshToken.findOneAndDelete({ token: refreshToken });
+
+    // if (!refreshTokens.includes(refreshToken)) return res.status(403).json({ code: 401, message: "Not authentication" });
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (error, user) => {
+        if (error) return res.status(403).json({ code: 403, message: "Forbidden" })
+
+        console.log(user);
+        const token = generateAccessToken({ email: user.email, id: user.id });
+
+        const newRefreshToken = new RefreshToken({ token: token.refreshToken });
+        newRefreshToken.save();
+
+        return res.status(200).json({
+            code: 200,
+            accessToken: token.accessToken,
+            refreshToken: token.refreshToken,
+        })
+    })
+
+}
 
 export const getAllUsers = async (req, res) => {
     try {

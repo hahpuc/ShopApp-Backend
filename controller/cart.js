@@ -1,6 +1,7 @@
 import Cart from '../models/cart.js'
 import jwt from 'jsonwebtoken'
 import Products from '../models/product.js'
+import { StatusCode } from '../common/StatusCode.js'
 
 // After sign up, each user have 1 cart 
 export const createUserCart = async (userId) => {
@@ -23,13 +24,13 @@ export const getCart = async (req, res) => {
     try {
         const cart = await Cart.findById({ _id: req.userId });
 
-        res.status(200).json({
-            code: 200,
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             data: cart
         })
     } catch (error) {
-        res.status(404).json({
-            code: 404,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message
         })
     }
@@ -56,14 +57,14 @@ export const addProductIntoCart = async (req, res) => {
         }
 
         await cart.save()
-        res.status(200).json({
-            code: 200,
+        res.status(StatusCode.CreateSuccessStatus).json({
+            code: StatusCode.CreateSuccessStatus,
             message: "Added product into cart",
             result: cart
         })
     } catch (error) {
-        res.status(400).json({
-            code: 400,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message
         })
     }
@@ -80,22 +81,22 @@ export const deleteProductInCart = async (req, res) => {
             cart.amount -= 1
             cart.products.splice(indexProduct, 1);
         } else {
-            return res.status(200).json({
-                code: 200,
+            return res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
                 message: "Don't have this product in Cart"
             })
         }
 
         await cart.save()
-        res.status(200).json({
-            code: 200,
+        res.status(StatusCode.UpdateDeleteSuccess).json({
+            code: StatusCode.UpdateDeleteSuccess,
             message: "Deleted product in Cart",
             result: cart
         })
 
     } catch (error) {
-        res.status(400).json({
-            code: 400,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message
         })
     }

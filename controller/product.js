@@ -1,3 +1,4 @@
+import { StatusCode } from '../common/StatusCode.js'
 import Product from '../models/product.js'
 
 export const createProduct = async (req, res) => {
@@ -6,14 +7,14 @@ export const createProduct = async (req, res) => {
     try {
         await product.save()
 
-        res.status(201).json({
-            code: 201,
+        res.status(StatusCode.CreateSuccessStatus).json({
+            code: StatusCode.CreateSuccessStatus,
             message: "Create new product successfully",
             data: product,
         })
     } catch (error) {
-        res.status(400).json({
-            code: 400,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message,
         })
     }
@@ -24,7 +25,7 @@ export const getProducts = async (req, res) => {
         const { page, limit } = req.query;
 
         if (page <= 0) {
-            return res.status(200).send({ error: true, message: "invalid page number" });
+            return res.status(StatusCode.SuccessStatus).send({ error: true, message: "invalid page number" });
         }
 
         const option = {
@@ -33,15 +34,15 @@ export const getProducts = async (req, res) => {
         }
 
         var products = await Product.paginate({}, option);
-        res.status(200).json({
-            code: 200,
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             message: "Get products successfully",
             data: products,
         })
 
     } catch (error) {
-        res.status(404).json({
-            code: 404,
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
             message: error.message,
         })
     }
@@ -51,8 +52,8 @@ export const getProductByCategory = async (req, res) => {
     const categoryId = req.body.categoryId
 
     if (!categoryId) {
-        return res.status(404).json({
-            code: 404,
+        return res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
             message: "All fill must be required",
         })
     }
@@ -60,22 +61,22 @@ export const getProductByCategory = async (req, res) => {
     try {
         let products = await Product.find({ categoryId: categoryId })
         if (products) {
-            res.status(200).json({
-                code: 200,
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
                 message: "Get products successfully",
                 data: products,
             })
         }
         else {
-            res.status(200).json({
-                code: 200,
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
                 message: "Empty product",
                 data: products,
             })
         }
     } catch (error) {
-        res.status(400).json({
-            code: 400,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message,
         })
     }

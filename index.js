@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
-import postRoutes from './routes/post.js';
 import userRoutes from './routes/users.js';
 import categoriesRoutes from './routes/categories.js';
 import productRoutes from './routes/product.js';
@@ -18,7 +17,6 @@ app.use(express.json({ limit: '25mb', extended: true }));
 app.use(cors());
 app.use(morgan('short'));
 
-app.use('', postRoutes);
 app.use('', userRoutes);
 app.use('', categoriesRoutes);
 app.use('', productRoutes);

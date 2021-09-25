@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { StatusCode } from "../common/StatusCode.js";
 import RefreshToken from "../models/refreshToken.js";
 
 import UserModal from "../models/user.js";
@@ -7,20 +8,32 @@ import { createUserCart } from "./cart.js";
 
 // let refreshTokens = [];
 
+const generateAccessToken = (user) => {
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
+
+    console.log("GENERATE TOKEN", refreshToken);
+
+    return {
+        accessToken,
+        refreshToken,
+    }
+}
+
 export const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const oldUser = await UserModal.findOne({ email });
 
-        if (!oldUser) return res.status(404).json({
-            code: 404,
+        if (!oldUser) return res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
             message: "User doesn't exist"
         });
 
         const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
-        if (!isPasswordCorrect) return res.status(400).json({
-            code: 400,
+        if (!isPasswordCorrect) return res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: "Invalid credentials"
         });
 
@@ -30,8 +43,8 @@ export const signin = async (req, res) => {
         const newRefreshToken = new RefreshToken({ token: token.refreshToken });
         await newRefreshToken.save();
 
-        return res.status(200).json({
-            code: 200,
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             data: {
                 result: oldUser,
                 accessToken: token.accessToken,
@@ -39,8 +52,8 @@ export const signin = async (req, res) => {
             },
         });
     } catch (error) {
-        return res.status(400).json({
-            code: 400,
+        return res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message
         });
     }
@@ -52,16 +65,16 @@ export const signup = async (req, res) => {
     try {
         const oldUser = await UserModal.findOne({ email });
 
-        if (oldUser) return res.status(200).json({
-            code: 200,
+        if (oldUser) return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             message: "User already exists"
         });
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
 
-        res.status(201).json({
-            code: 201,
+        res.status(StatusCode.CreateSuccessStatus).json({
+            code: StatusCode.CreateSuccessStatus,
             data: {
                 result,
             },
@@ -69,38 +82,36 @@ export const signup = async (req, res) => {
 
         createUserCart(result._id);
     } catch (error) {
-        res.status(400).json({
-            code: 400,
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
             message: error.message
         });
     }
 };
 
-const generateAccessToken = (user) => {
-    const accessToken = jwt.sign(user, process.env.AUTH_KEY, { expiresIn: "45s" });
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
+export const logout = async (req, res) => {
 
-    return {
-        accessToken,
-        refreshToken,
-    }
+    // Destory current accesstoken and delete refresh token in Database 
+
+    res.status(200).json({
+        code: 200,
+        message: "LOGOUT",
+    })
 }
 
 
 export const refreshToken = async (req, res) => {
     const refreshToken = req.body.refreshToken;
 
-    if (refreshToken == null) return res.status(401).json({ code: 401, message: "Refresh token was null" });
+    if (refreshToken == null) return res.status(StatusCode.NotAuthentication).json({ code: StatusCode.NotAuthentication, message: "Refresh token was null" });
 
     const isExistToken = await RefreshToken.findOne({ token: refreshToken });
-    if (!isExistToken) return res.status(403).json({ code: 403, message: "Not authentication!" })
+    if (!isExistToken) return res.status(StatusCode.CannotAccess).json({ code: StatusCode.CannotAccess, message: "Not allow to access!" })
 
     await RefreshToken.findOneAndDelete({ token: refreshToken });
 
-    // if (!refreshTokens.includes(refreshToken)) return res.status(403).json({ code: 401, message: "Not authentication" });
-
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (error, user) => {
-        if (error) return res.status(403).json({ code: 403, message: "Forbidden" })
+        if (error) return res.status(StatusCode.PayloadIsInvalid).json({ code: StatusCode.PayloadIsInvalid, message: "Error" })
 
         console.log(user);
         const token = generateAccessToken({ email: user.email, id: user.id });
@@ -108,8 +119,8 @@ export const refreshToken = async (req, res) => {
         const newRefreshToken = new RefreshToken({ token: token.refreshToken });
         newRefreshToken.save();
 
-        return res.status(200).json({
-            code: 200,
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             accessToken: token.accessToken,
             refreshToken: token.refreshToken,
         })
@@ -120,8 +131,8 @@ export const refreshToken = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         const users = await UserModal.find();
-        res.status(200).json(users);
+        res.status(StatusCode.SuccessStatus).json(users);
     } catch (error) {
-        res.status(404).json({ message: error.message })
+        res.status(StatusCode.ResourceNotFound).json({ message: error.message })
     }
 }

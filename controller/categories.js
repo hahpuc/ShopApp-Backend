@@ -1,11 +1,12 @@
+import { StatusCode } from '../common/StatusCode.js';
 import Categories from '../models/categories.js';
 
 export const createCategory = async (req, res) => {
 
     const isExist = await Categories.findOne({ name: req.body.name });
     if (isExist) {
-        return res.status(200).json({
-            code: 200,
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             message: "Category is exist"
         })
     }
@@ -16,12 +17,15 @@ export const createCategory = async (req, res) => {
 
     try {
         await newCategory.save()
-        res.status(201).json({
-            code: 201,
+        res.status(StatusCode.CreateSuccessStatus).json({
+            code: StatusCode.CreateSuccessStatus,
             message: "Create new category successfully"
         })
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            message: error.message
+        });
     }
 }
 
@@ -29,13 +33,13 @@ export const getCategories = async (req, res) => {
     try {
         const categories = await Categories.find()
 
-        res.status(200).json({
-            code: 200,
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
             data: categories,
         })
     } catch (error) {
-        res.status(404).json({
-            code: 404,
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
             message: error.message
         })
     }

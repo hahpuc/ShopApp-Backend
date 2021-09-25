@@ -7,6 +7,7 @@ export const sendNotification = async (req, res) => {
         'text': 'THIS IS MY NOTIFICAITION'
     }
 
+    // HARD CODE: Get fcm token from device
     var fcm_token = ['ecSZY2qCZkZBuvx1jCAyQD:APA91bGmLRL4voS1G_rGaVzcCAVYsCuVEiEMpQKLsRCY0O_EgzomoOffqdOUsn-yEsWfvmSymNxVF3nNi25S1d6u3dD-dtP0_eJZnVCw6lmezhI5rOWGkdJc6FIVlWqW8XgkL2P41pTq'];
 
     var notification_body = {

@@ -17,6 +17,13 @@ const productSchema = mongoose.Schema(
             type: Number,
             required: true,
         },
+        imageUrl: {
+            type: String,
+            required: true,
+        },
+        cloudinary_id: {
+            type: String,
+        },
         sold: {
             type: Number,
             default: 0,

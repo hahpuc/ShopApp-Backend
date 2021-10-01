@@ -12,8 +12,6 @@ const generateAccessToken = (user) => {
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
 
-    console.log("GENERATE TOKEN", refreshToken);
-
     return {
         accessToken,
         refreshToken,

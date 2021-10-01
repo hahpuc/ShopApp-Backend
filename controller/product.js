@@ -1,10 +1,21 @@
 import { StatusCode } from '../common/StatusCode.js'
 import Product from '../models/product.js'
+import cloudinary from '../utils/cloudinary.js'
+
 
 export const createProduct = async (req, res) => {
-    const product = Product(req.body)
-
     try {
+        const uploadImage = await cloudinary.uploader.upload(req.file.path, {
+            folder: "products/"
+        });
+
+        const product = Product({
+            name: req.body.name,
+            categoryId: req.body.categoryId,
+            price: req.body.price,
+            imageUrl: uploadImage.url,
+            cloudinary_id: uploadImage.public_id,
+        })
         await product.save()
 
         res.status(StatusCode.CreateSuccessStatus).json({

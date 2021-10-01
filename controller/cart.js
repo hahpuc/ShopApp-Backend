@@ -1,10 +1,11 @@
-import Cart from '../models/cart.js'
-import jwt from 'jsonwebtoken'
-import Products from '../models/product.js'
-import { StatusCode } from '../common/StatusCode.js'
+const Cart = require('../models/cart.js');
+const jwt = require('jsonwebtoken');
+const Products = require('../models/product.js');
+const StatusCode = require('../common/StatusCode.js');
+
 
 // After sign up, each user have 1 cart 
-export const createUserCart = async (userId) => {
+const createUserCart = async (userId) => {
     try {
         var products = []
         const newCart = Cart({
@@ -20,7 +21,7 @@ export const createUserCart = async (userId) => {
     }
 }
 
-export const getCart = async (req, res) => {
+const getCart = async (req, res) => {
     try {
         const cart = await Cart.findById({ _id: req.userId });
 
@@ -36,7 +37,7 @@ export const getCart = async (req, res) => {
     }
 }
 
-export const addProductIntoCart = async (req, res) => {
+const addProductIntoCart = async (req, res) => {
     try {
         const cart = await Cart.findById({ _id: req.userId })
 
@@ -70,7 +71,7 @@ export const addProductIntoCart = async (req, res) => {
     }
 }
 
-export const deleteProductInCart = async (req, res) => {
+const deleteProductInCart = async (req, res) => {
     try {
         const cart = await Cart.findById({ _id: req.userId })
 
@@ -100,4 +101,11 @@ export const deleteProductInCart = async (req, res) => {
             message: error.message
         })
     }
+}
+
+module.exports = {
+    createUserCart,
+    getCart,
+    addProductIntoCart,
+    deleteProductInCart
 }

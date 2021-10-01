@@ -1,10 +1,10 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { StatusCode } from "../common/StatusCode.js";
-import RefreshToken from "../models/refreshToken.js";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const StatusCode = require("../common/StatusCode.js");
+const RefreshToken = require("../models/refreshToken.js");
 
-import UserModal from "../models/user.js";
-import { createUserCart } from "./cart.js";
+const UserModal = require("../models/user.js");
+const { createUserCart } = require("./cart.js");
 
 // let refreshTokens = [];
 
@@ -18,7 +18,7 @@ const generateAccessToken = (user) => {
     }
 }
 
-export const signin = async (req, res) => {
+const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -57,7 +57,7 @@ export const signin = async (req, res) => {
     }
 };
 
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
     const { email, password, firstName, lastName } = req.body;
 
     try {
@@ -87,7 +87,7 @@ export const signup = async (req, res) => {
     }
 };
 
-export const logout = async (req, res) => {
+const logout = async (req, res) => {
 
     // Destory current accesstoken and delete refresh token in Database 
 
@@ -98,7 +98,7 @@ export const logout = async (req, res) => {
 }
 
 
-export const refreshToken = async (req, res) => {
+const refreshToken = async (req, res) => {
     const refreshToken = req.body.refreshToken;
 
     if (refreshToken == null) return res.status(StatusCode.NotAuthentication).json({ code: StatusCode.NotAuthentication, message: "Refresh token was null" });
@@ -126,11 +126,19 @@ export const refreshToken = async (req, res) => {
 
 }
 
-export const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
         const users = await UserModal.find();
         res.status(StatusCode.SuccessStatus).json(users);
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({ message: error.message })
     }
+}
+
+module.exports = {
+    signin,
+    signup,
+    logout,
+    refreshToken,
+    getAllUsers
 }

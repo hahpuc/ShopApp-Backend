@@ -1,9 +1,9 @@
-import { StatusCode } from '../common/StatusCode.js'
-import Product from '../models/product.js'
-import cloudinary from '../utils/cloudinary.js'
+const StatusCode = require('../common/StatusCode.js');
+const Product = require('../models/product.js');
+const cloudinary = require('../utils/cloudinary.js');
 
 
-export const createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
     try {
         const uploadImage = await cloudinary.uploader.upload(req.file.path, {
             folder: "products/"
@@ -31,7 +31,7 @@ export const createProduct = async (req, res) => {
     }
 }
 
-export const getProducts = async (req, res) => {
+const getProducts = async (req, res) => {
     try {
         const { page, limit } = req.query;
 
@@ -59,7 +59,7 @@ export const getProducts = async (req, res) => {
     }
 }
 
-export const getProductByCategory = async (req, res) => {
+const getProductByCategory = async (req, res) => {
     const categoryId = req.body.categoryId
 
     if (!categoryId) {
@@ -91,4 +91,10 @@ export const getProductByCategory = async (req, res) => {
             message: error.message,
         })
     }
+}
+
+module.exports = {
+    createProduct,
+    getProductByCategory,
+    getProducts
 }

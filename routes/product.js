@@ -1,10 +1,10 @@
-import express from 'express'
-import { createProduct, getProductByCategory, getProducts } from '../controller/product.js'
-import upload from '../utils/multer.js'
+const express = require('express');
+const { createProduct, getProductByCategory, getProducts } = require('../controller/product.js');
+const upload = require('../utils/multer.js');
 const router = express.Router();
 
 router.post('/create_product', upload.single('image'), createProduct);
 router.get('/category/product', getProductByCategory)
 router.get('/products', getProducts)
 
-export default router;
+module.exports = router;

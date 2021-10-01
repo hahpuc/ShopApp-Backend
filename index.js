@@ -1,14 +1,25 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import morgan from 'morgan';
-import userRoutes from './routes/users.js';
-import categoriesRoutes from './routes/categories.js';
-import productRoutes from './routes/product.js';
-import cartRoutes from './routes/cart.js';
-import notificationRoutes from './routes/notification.js';
+// import express from 'express';
+// import mongoose from 'mongoose';
+// import cors from 'cors';
+// import morgan from 'morgan';
+// import userRoutes from './routes/users.js';
+// import categoriesRoutes from './routes/categories.js';
+// import productRoutes from './routes/product.js';
+// import cartRoutes from './routes/cart.js';
+// import notificationRoutes from './routes/notification.js';
 
-import dotenv from 'dotenv'
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const morgan = require('morgan');
+const dotenv = require('dotenv');
+
+const userRoutes = require('./routes/users.js');
+const categoriesRoutes = require('./routes/categories.js');
+const productRoutes = require('./routes/product.js');
+const cartRoutes = require('./routes/cart.js');
+const notificationRoutes = require('./routes/notification.js');
+
 
 const app = express();
 dotenv.config();

@@ -1,7 +1,7 @@
 
-import fetch from 'node-fetch';
+const { default: fetch } = require("node-fetch");
 
-export const sendNotification = async (req, res) => {
+const sendNotification = async (req, res) => {
     var notification = {
         'title': 'Furniter Shop',
         'body': 'Test network timeout'
@@ -19,6 +19,7 @@ export const sendNotification = async (req, res) => {
         },
         'registration_ids': fcm_token,
     }
+
 
     fetch('https://fcm.googleapis.com/fcm/send', {
         'method': 'POST',
@@ -38,4 +39,8 @@ export const sendNotification = async (req, res) => {
             message: error
         })
     })
+}
+
+module.exports = {
+    sendNotification
 }

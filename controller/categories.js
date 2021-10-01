@@ -1,7 +1,8 @@
-import { StatusCode } from '../common/StatusCode.js';
-import Categories from '../models/categories.js';
 
-export const createCategory = async (req, res) => {
+const StatusCode = require('../common/StatusCode.js');
+const Categories = require('../models/categories.js');
+
+const createCategory = async (req, res) => {
 
     const isExist = await Categories.findOne({ name: req.body.name });
     if (isExist) {
@@ -29,7 +30,7 @@ export const createCategory = async (req, res) => {
     }
 }
 
-export const getCategories = async (req, res) => {
+const getCategories = async (req, res) => {
     try {
         const categories = await Categories.find()
 
@@ -43,4 +44,9 @@ export const getCategories = async (req, res) => {
             message: error.message
         })
     }
+}
+
+module.exports = {
+    createCategory,
+    getCategories,
 }

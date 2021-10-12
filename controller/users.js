@@ -58,7 +58,7 @@ const signin = async (req, res) => {
 };
 
 const signup = async (req, res) => {
-    const { email, password, firstName, lastName } = req.body;
+    const { name, email, password, phone_number } = req.body;
 
     try {
         const oldUser = await UserModal.findOne({ email });
@@ -69,7 +69,13 @@ const signup = async (req, res) => {
         });
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
+        const result = await UserModal.create({
+            name, email, password: hashedPassword, phone_number,
+            total_address: 0,
+            shipping_address: [],
+            payment_method: 1,
+            role: 1,
+        });
 
         res.status(StatusCode.CreateSuccessStatus).json({
             code: StatusCode.CreateSuccessStatus,

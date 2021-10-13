@@ -19,6 +19,7 @@ const categoriesRoutes = require('./routes/categories.js');
 const productRoutes = require('./routes/product.js');
 const cartRoutes = require('./routes/cart.js');
 const notificationRoutes = require('./routes/notification.js');
+const orderRoutes = require('./routes/order.js');
 
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('', categoriesRoutes);
 app.use('', productRoutes);
 app.use('', cartRoutes);
 app.use('', notificationRoutes);
+app.use('', orderRoutes);
 
 app.get('/', (req, res) => {
     res.send("Hello to my API")

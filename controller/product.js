@@ -5,24 +5,39 @@ const cloudinary = require('../utils/cloudinary.js');
 
 const createProduct = async (req, res) => {
     try {
-        const uploadImage = await cloudinary.uploader.upload(req.file.path, {
-            folder: "products/"
-        });
+
+        let pictureFiles = req.files;
+        if (!pictureFiles)
+            return res.status(StatusCode.PayloadIsInvalid).json({
+                code: StatusCode.PayloadIsInvalid,
+                message: "No picture attached!"
+            });
+
+        var images = [];
+        for (const picture of pictureFiles) {
+            const uploadResponse = await cloudinary.uploader.upload(picture.path, { folder: "products/" + req.body.name })
+
+            images.push({
+                imageUrl: uploadResponse.url,
+                cloudinary_id: uploadResponse.public_id
+            })
+        }
 
         const product = Product({
             name: req.body.name,
             categoryId: req.body.categoryId,
             price: req.body.price,
-            imageUrl: uploadImage.url,
-            cloudinary_id: uploadImage.public_id,
+            images: images,
+            description: req.body.description
         })
+
         await product.save()
 
         res.status(StatusCode.CreateSuccessStatus).json({
             code: StatusCode.CreateSuccessStatus,
-            message: "Create new product successfully",
             data: product,
         })
+
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
@@ -48,7 +63,7 @@ const getProducts = async (req, res) => {
         res.status(StatusCode.SuccessStatus).json({
             code: StatusCode.SuccessStatus,
             message: "Get products successfully",
-            data: products,
+            products,
         })
 
     } catch (error) {
@@ -71,6 +86,7 @@ const getProductByCategory = async (req, res) => {
 
     try {
         let products = await Product.find({ categoryId: categoryId })
+
         if (products) {
             res.status(StatusCode.SuccessStatus).json({
                 code: StatusCode.SuccessStatus,

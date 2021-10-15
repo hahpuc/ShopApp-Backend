@@ -4,18 +4,22 @@ const { ObjectID } = mongoose.Schema.Types;
 
 const orderSchema = mongoose.Schema(
     {
-        status: [
+        status_code: Number,
+        status_list: [
             {
-                type: Number,
+                _id: Number,
                 description: String,
                 time: Date,
             }
         ],
+        user_id: String,
         name: String,
+        email: String,
         phone_number: String,
         shipping_address: String,
         total_money: Number,
         payment_method: Number,
+        paid: Boolean,
         items: [
             {
                 productId: { type: ObjectID, ref: "Product", },
@@ -24,14 +28,15 @@ const orderSchema = mongoose.Schema(
                 quantity: Number,
             }
         ],
-        order_time: Date,
-        payment_time: Date,
-        ship_time: Date,
-        completed_time: Date,
+        order_time: { type: Date, default: null },
+        payment_time: { type: Date, default: null },
+        ship_time: { type: Date, default: null },
+        completed_time: { type: Date, default: null },
+        cancel_time: { type: Date, default: null }
     },
     {
         versionKey: false,
-        timestamps: true
+        // timestamps: true
     },
 );
 

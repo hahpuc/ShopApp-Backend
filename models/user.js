@@ -9,8 +9,10 @@ const userSchema = mongoose.Schema(
         total_address: Number,
         shipping_address: [
             {
+                name: String,
                 address: String,
                 phoneNumber: String,
+                isDefault: { type: Boolean, default: false }
             },
         ],
         payment_method: Number,

@@ -56,10 +56,13 @@ const getProducts = async (req, res) => {
 
         const option = {
             page: parseInt(page),
-            limit: parseInt(limit)
+            limit: parseInt(limit),
+            populate: 'categoryId',
         }
 
-        var products = await Product.paginate({}, option);
+        let products = await Product.paginate({}, option);
+
+
         res.status(StatusCode.SuccessStatus).json({
             code: StatusCode.SuccessStatus,
             message: "Get products successfully",
@@ -85,7 +88,20 @@ const getProductByCategory = async (req, res) => {
     }
 
     try {
-        let products = await Product.find({ categoryId: categoryId })
+
+        const { page, limit } = req.query;
+
+        if (page <= 0) {
+            return res.status(StatusCode.SuccessStatus).send({ error: true, message: "invalid page number" });
+        }
+
+        const option = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            populate: 'categoryId',
+        }
+
+        let products = await Product.paginate({ categoryId: categoryId }, option);
 
         if (products) {
             res.status(StatusCode.SuccessStatus).json({
@@ -109,8 +125,44 @@ const getProductByCategory = async (req, res) => {
     }
 }
 
+const getProductById = async (req, res) => {
+    const productId = req.params.id
+
+    if (!productId) {
+        return res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            message: "All fill must be required",
+        })
+    }
+
+    try {
+        let product = await Product.findById(productId).populate('categoryId')
+
+        if (product) {
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
+                message: "Get product successfully",
+                data: product,
+            })
+        }
+        else {
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
+                message: "Empty product",
+                data: product,
+            })
+        }
+    } catch (error) {
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            message: error.message,
+        })
+    }
+}
+
 module.exports = {
     createProduct,
     getProductByCategory,
-    getProducts
+    getProducts,
+    getProductById
 }

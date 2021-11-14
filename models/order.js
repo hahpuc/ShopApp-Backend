@@ -12,7 +12,7 @@ const orderSchema = mongoose.Schema(
                 time: Date,
             }
         ],
-        user_id: String,
+        userId: { type: ObjectID, ref: "User", },
         name: String,
         email: String,
         phone_number: String,
@@ -22,9 +22,8 @@ const orderSchema = mongoose.Schema(
         paid: Boolean,
         items: [
             {
+                _id: Number,
                 productId: { type: ObjectID, ref: "Product", },
-                name: String,
-                price: Number,
                 quantity: Number,
             }
         ],

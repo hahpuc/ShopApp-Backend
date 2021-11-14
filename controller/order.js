@@ -1,12 +1,20 @@
 const StatusCode = require('../common/StatusCode.js');
 const Order = require('../models/order.js');
 
+const generateUid = require('../utils/generate_uid.js');
 
 const createOrder = async (req, res) => {
-    try {
 
+    try {
         const orderInformation = req.body;
         const currentTime = new Date().toLocaleString();
+
+        // Get only date now without time
+        var timeTextOnlyDate = currentTime.slice(0, -13).replaceAll('/', '');
+        var randomId = generateUid();
+
+        var orderId = timeTextOnlyDate + randomId;
+
         const status_list = [
             {
                 _id: 1,
@@ -16,9 +24,10 @@ const createOrder = async (req, res) => {
         ];
 
         const order = Order({
+            _id: orderId,
             status_code: 1,
             status_list,
-            user_id: orderInformation.user_id,
+            userId: req.userId,
             name: orderInformation.name,
             email: orderInformation.email,
             phone_number: orderInformation.phone_number,
@@ -32,9 +41,9 @@ const createOrder = async (req, res) => {
 
         await order.save()
 
-        res.status(StatusCode.CreateSuccessStatus).json({
-            code: StatusCode.CreateSuccessStatus,
-            message: "Create new category successfully",
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            message: "Create new order successfully",
             data: order
         })
     } catch (error) {
@@ -45,32 +54,16 @@ const createOrder = async (req, res) => {
     }
 }
 
-const getOrders = async (req, res) => {
-    try {
-        const orders = await Order.find();
-
-        res.status(StatusCode.SuccessStatus).json({
-            code: StatusCode.SuccessStatus,
-            data: orders
-        })
-    } catch (error) {
-        res.status(StatusCode.ResourceNotFound).json({
-            code: StatusCode.ResourceNotFound,
-            message: error.message
-        })
-    }
-}
-
 const setToShipOrder = async (req, res) => {
     try {
-        const { order_id } = req.body;
+        const { orderId } = req.body;
 
-        const order = await Order.findById({ _id: order_id });
+        const order = await Order.findById({ _id: orderId });
 
         if (order == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `No order with id ${order_id}`
+                message: `No order with id ${orderId}`
             })
         }
 
@@ -106,14 +99,14 @@ const setToShipOrder = async (req, res) => {
 
 const setCompleteOrder = async (req, res) => {
     try {
-        const { order_id } = req.body;
+        const { orderId } = req.body;
 
-        const order = await Order.findById({ _id: order_id });
+        const order = await Order.findById({ _id: orderId });
 
         if (order == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `No order with id ${order_id}`
+                message: `No order with id ${orderId}`
             })
         }
 
@@ -154,9 +147,78 @@ const setCompleteOrder = async (req, res) => {
     }
 }
 
+
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find().populate('userId').populate('items.productId');
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: orders
+        })
+    } catch (error) {
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            message: error.message
+        })
+    }
+}
+
+const getOrderById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const order = await Order.findById({ _id: id }).populate('userId').populate('items.productId');
+
+        if (order == null) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                message: `No order with id ${id}`
+            })
+        }
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: order
+        })
+    } catch (error) {
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            message: error.message
+        })
+    }
+}
+
+const getOrdersByStatusCode = async (req, res) => {
+    try {
+        const { code } = req.params;
+
+        const orders = await Order.find({ status_code: code }).populate('userId').populate('items.productId');
+
+        if (orders == null) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                message: `Don't have this order`
+            })
+        }
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: orders
+        })
+    } catch (error) {
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     createOrder,
-    getOrders,
+    getAllOrders,
     setToShipOrder,
-    setCompleteOrder
+    setCompleteOrder,
+    getOrderById,
+    getOrdersByStatusCode,
 }

@@ -23,7 +23,7 @@ const createUserCart = async (userId) => {
 
 const getCart = async (req, res) => {
     try {
-        const cart = await Cart.findById({ _id: req.userId });
+        const cart = await Cart.findById({ _id: req.userId }).populate('products.productId')
 
         res.status(StatusCode.SuccessStatus).json({
             code: StatusCode.SuccessStatus,
@@ -42,19 +42,15 @@ const addProductIntoCart = async (req, res) => {
         const cart = await Cart.findById({ _id: req.userId })
 
         var { productId, quantity } = req.body;
-        const indexProduct = cart.products.findIndex(product => product._id == productId)
-        const productInfo = await Products.findById({ _id: productId })
+        const indexProduct = cart.products.findIndex(product => product.productId == productId)
 
         if (indexProduct == -1) {
-            cart.amount += 1
             cart.products.push({
-                _id: productInfo._id,
-                name: productInfo.name,
-                price: productInfo.price,
+                productId: productId,
                 quantity
             })
         } else {
-            cart.products[indexProduct].quantity += quantity
+            cart.products[indexProduct].quantity = quantity
         }
 
         await cart.save()
@@ -76,27 +72,27 @@ const deleteProductInCart = async (req, res) => {
         const cart = await Cart.findById({ _id: req.userId })
 
         var { productId } = req.body;
-        const indexProduct = cart.products.findIndex(product => product._id == productId)
+        const indexProduct = cart.products.findIndex(product => product.productId == productId)
+
+        console.log(indexProduct);
 
         if (indexProduct != -1) {
-            cart.amount -= 1
             cart.products.splice(indexProduct, 1);
+            await cart.save();
+
+            return res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
+                message: "Deleted product in Cart",
+                result: cart
+            })
         } else {
             return res.status(StatusCode.SuccessStatus).json({
                 code: StatusCode.SuccessStatus,
                 message: "Don't have this product in Cart"
             })
         }
-
-        await cart.save()
-        res.status(StatusCode.UpdateDeleteSuccess).json({
-            code: StatusCode.UpdateDeleteSuccess,
-            message: "Deleted product in Cart",
-            result: cart
-        })
-
     } catch (error) {
-        res.status(StatusCode.PayloadIsInvalid).json({
+        return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
             message: error.message
         })

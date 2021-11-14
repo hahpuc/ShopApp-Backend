@@ -160,9 +160,53 @@ const getProductById = async (req, res) => {
     }
 }
 
+const updateProduct = async (req, res) => {
+    const productId = req.params.id
+    const { name, price, description, categoryId } = req.body
+
+    // if (!productId || !name || !price || !description || !categoryId) {
+    //     return res.status(StatusCode.ResourceNotFound).json({
+    //         code: StatusCode.ResourceNotFound,
+    //         message: "All fill must be required",
+    //     })
+    // }
+
+    try {
+        let product = await Product.findById(productId).populate('categoryId')
+
+        if (!product) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                message: "Product not found",
+            })
+        }
+
+        if (name != null) product.name = name
+        if (price != null) product.price = price
+        if (description != null) product.description = description
+        if (categoryId != null) product.categoryId = categoryId
+
+        await product.save()
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            message: "Update product successfully",
+            data: product,
+        })
+
+    } catch (error) {
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            message: error.message,
+        })
+    }
+}
+
+
 module.exports = {
     createProduct,
     getProductByCategory,
     getProducts,
-    getProductById
+    getProductById,
+    updateProduct
 }

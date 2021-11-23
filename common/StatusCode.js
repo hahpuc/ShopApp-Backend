@@ -1,5 +1,5 @@
 
-export const StatusCode = {
+const StatusCode = {
     SuccessStatus: 200,
     CreateSuccessStatus: 201,
     UpdateDeleteSuccess: 204,
@@ -9,3 +9,5 @@ export const StatusCode = {
     ResourceNotFound: 404,
     ServerGetsError: 500,
 }
+
+module.exports = StatusCode;

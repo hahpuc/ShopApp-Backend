@@ -1,10 +1,10 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { StatusCode } from "../common/StatusCode.js";
-import RefreshToken from "../models/refreshToken.js";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const StatusCode = require("../common/StatusCode.js");
+const RefreshToken = require("../models/refreshToken.js");
 
-import UserModal from "../models/user.js";
-import { createUserCart } from "./cart.js";
+const UserModal = require("../models/user.js");
+const { createUserCart } = require("./cart.js");
 
 // let refreshTokens = [];
 
@@ -12,15 +12,13 @@ const generateAccessToken = (user) => {
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
 
-    console.log("GENERATE TOKEN", refreshToken);
-
     return {
         accessToken,
         refreshToken,
     }
 }
 
-export const signin = async (req, res) => {
+const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -59,8 +57,8 @@ export const signin = async (req, res) => {
     }
 };
 
-export const signup = async (req, res) => {
-    const { email, password, firstName, lastName } = req.body;
+const signup = async (req, res) => {
+    const { name, email, password, phone_number } = req.body;
 
     try {
         const oldUser = await UserModal.findOne({ email });
@@ -71,7 +69,13 @@ export const signup = async (req, res) => {
         });
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
+        const result = await UserModal.create({
+            name, email, password: hashedPassword, phone_number,
+            total_address: 0,
+            shipping_address: [],
+            payment_method: 1,
+            role: 1,
+        });
 
         res.status(StatusCode.CreateSuccessStatus).json({
             code: StatusCode.CreateSuccessStatus,
@@ -89,7 +93,7 @@ export const signup = async (req, res) => {
     }
 };
 
-export const logout = async (req, res) => {
+const logout = async (req, res) => {
 
     // Destory current accesstoken and delete refresh token in Database 
 
@@ -100,7 +104,7 @@ export const logout = async (req, res) => {
 }
 
 
-export const refreshToken = async (req, res) => {
+const refreshToken = async (req, res) => {
     const refreshToken = req.body.refreshToken;
 
     if (refreshToken == null) return res.status(StatusCode.NotAuthentication).json({ code: StatusCode.NotAuthentication, message: "Refresh token was null" });
@@ -128,11 +132,19 @@ export const refreshToken = async (req, res) => {
 
 }
 
-export const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
     try {
         const users = await UserModal.find();
         res.status(StatusCode.SuccessStatus).json(users);
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({ message: error.message })
     }
+}
+
+module.exports = {
+    signin,
+    signup,
+    logout,
+    refreshToken,
+    getAllUsers
 }

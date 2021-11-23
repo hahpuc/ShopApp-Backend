@@ -1,17 +1,43 @@
-import { StatusCode } from '../common/StatusCode.js'
-import Product from '../models/product.js'
+const StatusCode = require('../common/StatusCode.js');
+const Product = require('../models/product.js');
+const cloudinary = require('../utils/cloudinary.js');
 
-export const createProduct = async (req, res) => {
-    const product = Product(req.body)
 
+const createProduct = async (req, res) => {
     try {
+
+        let pictureFiles = req.files;
+        if (!pictureFiles)
+            return res.status(StatusCode.PayloadIsInvalid).json({
+                code: StatusCode.PayloadIsInvalid,
+                message: "No picture attached!"
+            });
+
+        var images = [];
+        for (const picture of pictureFiles) {
+            const uploadResponse = await cloudinary.uploader.upload(picture.path, { folder: "products/" + req.body.name })
+
+            images.push({
+                imageUrl: uploadResponse.url,
+                cloudinary_id: uploadResponse.public_id
+            })
+        }
+
+        const product = Product({
+            name: req.body.name,
+            categoryId: req.body.categoryId,
+            price: req.body.price,
+            images: images,
+            description: req.body.description
+        })
+
         await product.save()
 
         res.status(StatusCode.CreateSuccessStatus).json({
             code: StatusCode.CreateSuccessStatus,
-            message: "Create new product successfully",
             data: product,
         })
+
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
@@ -20,7 +46,7 @@ export const createProduct = async (req, res) => {
     }
 }
 
-export const getProducts = async (req, res) => {
+const getProducts = async (req, res) => {
     try {
         const { page, limit } = req.query;
 
@@ -30,14 +56,17 @@ export const getProducts = async (req, res) => {
 
         const option = {
             page: parseInt(page),
-            limit: parseInt(limit)
+            limit: parseInt(limit),
+            populate: 'categoryId',
         }
 
-        var products = await Product.paginate({}, option);
+        let products = await Product.paginate({}, option);
+
+
         res.status(StatusCode.SuccessStatus).json({
             code: StatusCode.SuccessStatus,
             message: "Get products successfully",
-            data: products,
+            products,
         })
 
     } catch (error) {
@@ -48,7 +77,7 @@ export const getProducts = async (req, res) => {
     }
 }
 
-export const getProductByCategory = async (req, res) => {
+const getProductByCategory = async (req, res) => {
     const categoryId = req.body.categoryId
 
     if (!categoryId) {
@@ -59,7 +88,21 @@ export const getProductByCategory = async (req, res) => {
     }
 
     try {
-        let products = await Product.find({ categoryId: categoryId })
+
+        const { page, limit } = req.query;
+
+        if (page <= 0) {
+            return res.status(StatusCode.SuccessStatus).send({ error: true, message: "invalid page number" });
+        }
+
+        const option = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            populate: 'categoryId',
+        }
+
+        let products = await Product.paginate({ categoryId: categoryId }, option);
+
         if (products) {
             res.status(StatusCode.SuccessStatus).json({
                 code: StatusCode.SuccessStatus,
@@ -80,4 +123,90 @@ export const getProductByCategory = async (req, res) => {
             message: error.message,
         })
     }
+}
+
+const getProductById = async (req, res) => {
+    const productId = req.params.id
+
+    if (!productId) {
+        return res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            message: "All fill must be required",
+        })
+    }
+
+    try {
+        let product = await Product.findById(productId).populate('categoryId')
+
+        if (product) {
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
+                message: "Get product successfully",
+                data: product,
+            })
+        }
+        else {
+            res.status(StatusCode.SuccessStatus).json({
+                code: StatusCode.SuccessStatus,
+                message: "Empty product",
+                data: product,
+            })
+        }
+    } catch (error) {
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            message: error.message,
+        })
+    }
+}
+
+const updateProduct = async (req, res) => {
+    const productId = req.params.id
+    const { name, price, description, categoryId } = req.body
+
+    // if (!productId || !name || !price || !description || !categoryId) {
+    //     return res.status(StatusCode.ResourceNotFound).json({
+    //         code: StatusCode.ResourceNotFound,
+    //         message: "All fill must be required",
+    //     })
+    // }
+
+    try {
+        let product = await Product.findById(productId).populate('categoryId')
+
+        if (!product) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                message: "Product not found",
+            })
+        }
+
+        if (name != null) product.name = name
+        if (price != null) product.price = price
+        if (description != null) product.description = description
+        if (categoryId != null) product.categoryId = categoryId
+
+        await product.save()
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            message: "Update product successfully",
+            data: product,
+        })
+
+    } catch (error) {
+        res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            message: error.message,
+        })
+    }
+}
+
+
+module.exports = {
+    createProduct,
+    getProductByCategory,
+    getProducts,
+    getProductById,
+    updateProduct
 }

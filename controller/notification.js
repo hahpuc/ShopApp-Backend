@@ -1,10 +1,10 @@
 
-import fetch from 'node-fetch';
+const { default: fetch } = require("node-fetch");
 
-export const sendNotification = async (req, res) => {
+const sendNotification = async (req, res) => {
     var notification = {
-        'title': 'TLONG notification hello helo',
-        'text': 'THIS IS MY NOTIFICAITION'
+        'title': 'Furniter Shop',
+        'body': 'Test network timeout'
     }
 
     // HARD CODE: Get fcm token from device
@@ -12,8 +12,14 @@ export const sendNotification = async (req, res) => {
 
     var notification_body = {
         'notification': notification,
+        'ios': {
+            'notification': {
+                'clickAction': 'news_intent'
+            }
+        },
         'registration_ids': fcm_token,
     }
+
 
     fetch('https://fcm.googleapis.com/fcm/send', {
         'method': 'POST',
@@ -33,4 +39,8 @@ export const sendNotification = async (req, res) => {
             message: error
         })
     })
+}
+
+module.exports = {
+    sendNotification
 }

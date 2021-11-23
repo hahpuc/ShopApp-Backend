@@ -1,10 +1,12 @@
-import express from 'express'
-import { createProduct, getProductByCategory, getProducts } from '../controller/product.js'
+const express = require('express');
+const { createProduct, getProductByCategory, getProducts, getProductById, updateProduct } = require('../controller/product.js');
+const upload = require('../middleware/multer.js');
 const router = express.Router();
 
+router.post('/create_product', upload.array('image', 10), createProduct);
+router.get('/category/products', getProductByCategory);
+router.get('/products', getProducts);
+router.get('/product/:id', getProductById)
+router.post('/product/:id', updateProduct);
 
-router.post('/create_product', createProduct)
-router.get('/category/product', getProductByCategory)
-router.get('/products', getProducts)
-
-export default router;
+module.exports = router;

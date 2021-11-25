@@ -11,7 +11,8 @@ const cartRoutes = require('./routes/cart.js');
 const notificationRoutes = require('./routes/notification.js');
 const orderRoutes = require('./routes/order.js');
 const fcmTokenRoutes = require('./routes/fcmToken.js');
-
+const {creatRoom} = require('./controller/room')
+const {sendMessage} = require('./controller/message');
 
 const app = express();
 dotenv.config();
@@ -60,23 +61,34 @@ const io = require("socket.io")(server)
 io.of('/chat').on("connection", async(socket)=>{
     console.log("connection " + socket.id)
     
-    socket.broadcast.emit('test2',"hello "+socket.id)
-
     socket.on("disconnect", ()=>{
         console.log("disconnect "+socket.id)
     })
 
-    socket.on("send-server", (msg,id) =>{
-        console.log({msg,id})
-        socket.join(id)
-        io.emit('send-client',msg)
+    console.log(socket.adapter.rooms)
+
+    socket.on("join-room",async (idUser1, idUser2)=>{
+        const idRoom = await creatRoom(idUser1, idUser2)
+        if(!idRoom)
+            socket.emit('send-client',{notifi: "Cant join room now"})
+        else{
+            socket.join(idRoom)
+            socket.phong = idRoom
+            console.log(socket.adapter.rooms)
+        }
     })
 
-    // socket.on("send-server",async msg=>{
-    //     const iot = await io.fetchSockets()
-    //     console.log(msg)
-    //     console.dir(iot,{depth:null})
-    //     socket.broadcast.emit('test1',msg)
-    //     socket.emit('test1', msg)
-    // })
+    socket.on("leave-room",(data)=>{
+        socket.leave(data)
+        console.log(socket.adapter.rooms)
+    })
+
+    socket.on("send-server", async(idUser, msg) =>{
+        const newMessage = await sendMessage(idUser, socket.phong, msg)
+        if(!newMessage)
+            socket.emit('send-client',{notifi: "Cant send message now"})
+        else
+            //socket.broadcast.to(id).emit('test2',msg)
+            io.of('/chat').to(socket.phong).emit('send-client',newMessage)
+    })
 })

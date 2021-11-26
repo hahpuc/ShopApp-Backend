@@ -12,9 +12,9 @@ const creatRoom = async (idUser1, idUser2) =>{
     ],$or: [
         {user2: idUser1},
         {user2: idUser2}]
-    })
+    }).populate('user1').populate('user2')
     if(room)
-        return room.id
+        return room
     const newRoom = new Room({
         user1: idUser1,
         user2: idUser2
@@ -23,10 +23,30 @@ const creatRoom = async (idUser1, idUser2) =>{
     const room1 = await newRoom.save().catch(()=>{
         return null
     })
-    return room1.id
+    return room1
+}
+//#endregion
+
+//#region Get all room
+const getAllRoom = async (req,res) => {
+    try{
+        const allRoom = await Room.find().populate('user1').populate('user2')
+
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: allRoom,
+        })
+    }
+    catch{
+        return res.status(StatusCode.CannotAccess).json({
+            code: StatusCode.CannotAccess,
+            message: "Fail get room",
+        })
+    }
 }
 //#endregion
 
 module.exports = {
     creatRoom,
+    getAllRoom,
 }

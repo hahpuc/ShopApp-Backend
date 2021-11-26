@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Message = require("../models/message")
+const Room = require("../models/room")
 const StatusCode = require('../common/StatusCode');
 const bcrypt = require("bcryptjs");
 
@@ -20,6 +21,35 @@ const sendMessage = async (idUser, idRoom, message) =>{
 }
 //#endregion
 
+//#region Get Message
+const getMessage = async (req, res)=>{
+    const {idRoom} = req.query
+
+    try{
+        const room = await Room.findById(idRoom)
+        if(!room)
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                message: "Dont have room",
+            })
+
+        const allMessage = await Message.find().sort({registration_data:1}).limit(100)
+
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: allMessage,
+        })
+    }
+    catch{
+        return res.status(StatusCode.CannotAccess).json({
+            code: StatusCode.CannotAccess,
+            message: "Fail get data message",
+        })
+    }
+
+}
+//#endregion
 module.exports = {
     sendMessage,
+    getMessage,
 }

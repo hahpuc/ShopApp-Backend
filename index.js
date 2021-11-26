@@ -11,6 +11,9 @@ const cartRoutes = require('./routes/cart.js');
 const notificationRoutes = require('./routes/notification.js');
 const orderRoutes = require('./routes/order.js');
 const fcmTokenRoutes = require('./routes/fcmToken.js');
+const message = require('./routes/message');
+const room = require('./routes/room');
+
 const {creatRoom} = require('./controller/room')
 const {sendMessage} = require('./controller/message');
 
@@ -33,6 +36,8 @@ app.use('', cartRoutes);
 app.use('', notificationRoutes);
 app.use('', orderRoutes);
 app.use('', fcmTokenRoutes)
+app.use('/message',message)
+app.use('/room',room)
 
 app.get('/', (req, res) => {
     res.send("Hello to my API")
@@ -72,8 +77,8 @@ io.of('/chat').on("connection", async(socket)=>{
         if(!idRoom)
             socket.emit('send-client',{notifi: "Cant join room now"})
         else{
-            socket.join(idRoom)
-            socket.phong = idRoom
+            socket.join(idRoom.id)
+            socket.phong = idRoom.id
             console.log(socket.adapter.rooms)
         }
     })

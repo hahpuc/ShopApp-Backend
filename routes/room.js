@@ -5,6 +5,6 @@ const auth = require('../middleware/auth.js')
 
 const router = express.Router();
 
-router.get('/getallroom', getAllRoom);
+router.get('/getallroom',auth, getAllRoom);
 
 module.exports = router;

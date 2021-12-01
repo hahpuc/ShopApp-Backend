@@ -19,7 +19,7 @@ const setDefaultPaymentMethod = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }

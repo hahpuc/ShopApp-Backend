@@ -26,13 +26,13 @@ const signin = async (req, res) => {
 
         if (!oldUser) return res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: "User doesn't exist"
+            error: "User doesn't exist"
         });
 
         const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         if (!isPasswordCorrect) return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: "Invalid credentials"
+            error: "Invalid credentials"
         });
 
         const token = generateAccessToken({ email: oldUser.email, id: oldUser._id });
@@ -52,7 +52,7 @@ const signin = async (req, res) => {
     } catch (error) {
         return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         });
     }
 };
@@ -65,7 +65,7 @@ const signup = async (req, res) => {
 
         if (oldUser) return res.status(StatusCode.SuccessStatus).json({
             code: StatusCode.SuccessStatus,
-            message: "User already exists"
+            error: "User already exists"
         });
 
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -88,7 +88,7 @@ const signup = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         });
     }
 };
@@ -110,6 +110,7 @@ const refreshToken = async (req, res) => {
     if (refreshToken == null) return res.status(StatusCode.NotAuthentication).json({ code: StatusCode.NotAuthentication, message: "Refresh token was null" });
 
     const isExistToken = await RefreshToken.findOne({ token: refreshToken });
+    console.log(isExistToken);
     if (!isExistToken) return res.status(StatusCode.CannotAccess).json({ code: StatusCode.CannotAccess, message: "Not allow to access!" })
 
     await RefreshToken.findOneAndDelete({ token: refreshToken });
@@ -137,7 +138,7 @@ const getAllUsers = async (req, res) => {
         const users = await UserModal.find();
         res.status(StatusCode.SuccessStatus).json(users);
     } catch (error) {
-        res.status(StatusCode.ResourceNotFound).json({ message: error.message })
+        res.status(StatusCode.ResourceNotFound).json({ error: error.message })
     }
 }
 

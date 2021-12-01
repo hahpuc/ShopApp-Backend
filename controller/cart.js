@@ -32,7 +32,7 @@ const getCart = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         })
     }
 }
@@ -62,7 +62,7 @@ const addProductIntoCart = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         })
     }
 }
@@ -94,7 +94,7 @@ const deleteProductInCart = async (req, res) => {
     } catch (error) {
         return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         })
     }
 }

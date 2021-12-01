@@ -6,9 +6,9 @@ const createCategory = async (req, res) => {
 
     const isExist = await Categories.findOne({ name: req.body.name });
     if (isExist) {
-        return res.status(StatusCode.SuccessStatus).json({
+        return res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.SuccessStatus,
-            message: "Category is exist"
+            error: "Category is exist"
         })
     }
 
@@ -25,7 +25,7 @@ const createCategory = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         });
     }
 }
@@ -41,7 +41,7 @@ const getCategories = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message
+            error: error.message
         })
     }
 }
@@ -53,7 +53,7 @@ const updateCategory = async (req, res) => {
         if (!category) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: "Category is not found"
+                error: "Category is not found"
             })
         }
 
@@ -68,7 +68,7 @@ const updateCategory = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         });
     }
 }

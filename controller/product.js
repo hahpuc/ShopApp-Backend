@@ -10,7 +10,7 @@ const createProduct = async (req, res) => {
         if (!pictureFiles)
             return res.status(StatusCode.PayloadIsInvalid).json({
                 code: StatusCode.PayloadIsInvalid,
-                message: "No picture attached!"
+                error: "No picture attached!"
             });
 
         var images = [];
@@ -41,7 +41,7 @@ const createProduct = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -51,7 +51,7 @@ const getProducts = async (req, res) => {
         const { page, limit } = req.query;
 
         if (page <= 0) {
-            return res.status(StatusCode.SuccessStatus).send({ error: true, message: "invalid page number" });
+            return res.status(StatusCode.SuccessStatus).send({ error: true, error: "invalid page number" });
         }
 
         const option = {
@@ -72,7 +72,7 @@ const getProducts = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -83,7 +83,7 @@ const getProductByCategory = async (req, res) => {
     if (!categoryId) {
         return res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: "All fill must be required",
+            error: "All fill must be required",
         })
     }
 
@@ -120,7 +120,7 @@ const getProductByCategory = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -131,7 +131,7 @@ const getProductById = async (req, res) => {
     if (!productId) {
         return res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: "All fill must be required",
+            error: "All fill must be required",
         })
     }
 
@@ -155,7 +155,7 @@ const getProductById = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -177,7 +177,7 @@ const updateProduct = async (req, res) => {
         if (!product) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: "Product not found",
+                error: "Product not found",
             })
         }
 
@@ -197,7 +197,7 @@ const updateProduct = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }

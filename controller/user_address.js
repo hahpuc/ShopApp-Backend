@@ -27,7 +27,7 @@ const createShippingAddress = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -44,7 +44,7 @@ const updateShippingAdress = async (req, res) => {
         if (findAddressIndex < 0) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: 'Do not have this address'
+                error: 'Do not have this address'
             });
         }
 
@@ -62,7 +62,7 @@ const updateShippingAdress = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -78,7 +78,7 @@ const deleteShippingAddress = async (req, res) => {
         if (findAddressIndex < 0) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: 'Do not have this address'
+                error: 'Do not have this address'
             });
         }
 
@@ -94,7 +94,7 @@ const deleteShippingAddress = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -121,7 +121,7 @@ const setDefaultAddress = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message,
+            error: error.message,
         })
     }
 }

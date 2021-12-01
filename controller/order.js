@@ -49,7 +49,7 @@ const createOrder = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message
+            error: error.message
         });
     }
 }
@@ -63,14 +63,14 @@ const setToShipOrder = async (req, res) => {
         if (order == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `No order with id ${orderId}`
+                error: `No order with id ${orderId}`
             })
         }
 
         if (order.status_code >= 3) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `Order has been shipped`
+                error: `Order has been shipped`
             })
         }
 
@@ -92,7 +92,7 @@ const setToShipOrder = async (req, res) => {
     } catch (error) {
         return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -106,21 +106,21 @@ const setCompleteOrder = async (req, res) => {
         if (order == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `No order with id ${orderId}`
+                error: `No order with id ${orderId}`
             })
         }
 
         if (order.status_code < 3) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `Order has not been shipped`
+                error: `Order has not been shipped`
             })
         }
 
         if (order.status_code >= 4) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `Order has been completed`
+                error: `Order has been completed`
             })
         }
 
@@ -142,7 +142,7 @@ const setCompleteOrder = async (req, res) => {
     } catch (error) {
         return res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
-            message: error.message,
+            error: error.message,
         })
     }
 }
@@ -159,7 +159,7 @@ const getAllOrders = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message
+            error: error.message
         })
     }
 }
@@ -173,7 +173,7 @@ const getOrderById = async (req, res) => {
         if (order == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `No order with id ${id}`
+                error: `No order with id ${id}`
             })
         }
 
@@ -184,7 +184,7 @@ const getOrderById = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message
+            error: error.message
         })
     }
 }
@@ -198,7 +198,7 @@ const getOrdersByStatusCode = async (req, res) => {
         if (orders == null) {
             return res.status(StatusCode.ResourceNotFound).json({
                 code: StatusCode.ResourceNotFound,
-                message: `Don't have this order`
+                error: `Don't have this order`
             })
         }
 
@@ -209,7 +209,7 @@ const getOrdersByStatusCode = async (req, res) => {
     } catch (error) {
         res.status(StatusCode.ResourceNotFound).json({
             code: StatusCode.ResourceNotFound,
-            message: error.message
+            error: error.message
         })
     }
 }

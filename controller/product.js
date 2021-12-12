@@ -78,7 +78,7 @@ const getProducts = async (req, res) => {
 }
 
 const getProductByCategory = async (req, res) => {
-    const categoryId = req.body.categoryId
+    const categoryId = req.params.id
 
     if (!categoryId) {
         return res.status(StatusCode.ResourceNotFound).json({

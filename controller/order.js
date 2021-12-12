@@ -214,6 +214,51 @@ const getOrdersByStatusCode = async (req, res) => {
     }
 }
 
+//#region cancel order 
+const cancelOrder = async (req, res) =>{
+    try {
+        const { orderId } = req.body;
+
+        const order = await Order.findById({ _id: orderId });
+
+        if (order == null) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                error: `No order with id ${orderId}`
+            })
+        }
+
+        if (order.status_code == 4) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                error: `Order has been completed`
+            })
+        }
+
+        const currentTime = new Date().toLocaleString();
+        order.status_code = 5;
+        order.cancel_time = currentTime;
+        order.status_list.push({
+            _id: 5,
+            description: "Cancel",
+            time: currentTime,
+        })
+
+        const result = await order.save();
+
+        return res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: result
+        })
+    } catch (error) {
+        return res.status(StatusCode.PayloadIsInvalid).json({
+            code: StatusCode.PayloadIsInvalid,
+            error: error.message,
+        })
+    }
+}
+//#endregion
+
 module.exports = {
     createOrder,
     getAllOrders,
@@ -221,4 +266,5 @@ module.exports = {
     setCompleteOrder,
     getOrderById,
     getOrdersByStatusCode,
+    cancelOrder,
 }

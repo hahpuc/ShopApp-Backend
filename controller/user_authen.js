@@ -9,7 +9,7 @@ const { createUserCart } = require("./cart.js");
 // let refreshTokens = [];
 
 const generateAccessToken = (user) => {
-    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "30d" });
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, { expiresIn: '30d' });
 
     return {

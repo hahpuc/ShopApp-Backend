@@ -37,6 +37,35 @@ app.get('/', (req, res) => {
     res.send("Hello to my API")
 })
 
+// upload file assetlinks.json to server 
+const fs = require('fs');
+const path = require('path');
+const androidAppLinks = path.join(__dirname, 'assetlinks.json');
+app.get('/.well-known/assetlinks.json', function (req, res, next) {
+    res.set('Content-Type', 'application/json');
+
+    fs.readFile(androidAppLinks, 'utf8', function (err, data) {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).send(data);
+    });
+});
+
+const iosUniversalLinks = path.join(__dirname, 'apple-app-site-association');
+app.get('/.well-known/apple-app-site-association', function (req, res, next) {
+    res.set('Content-Type', 'application/json');
+
+    fs.readFile(iosUniversalLinks, 'utf8', function (err, data) {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).send(data);
+    });
+});
+
+
+
 // MongoDB 
 const PORT = process.env.PORT || 5000;
 

@@ -1,0 +1,50 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "vn.fractal.murad.dev",
+            "sha256_cert_fingerprints": [
+                "05:92:B3:73:C0:CA:6A:9E:1C:82:8C:33:6C:28:52:07:8F:EA:4D:F6:29:4E:16:C1:48:6E:D2:D0:AE:D2:75:56"
+            ]
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "vn.fractal.murad",
+            "sha256_cert_fingerprints": [
+                "05:92:B3:73:C0:CA:6A:9E:1C:82:8C:33:6C:28:52:07:8F:EA:4D:F6:29:4E:16:C1:48:6E:D2:D0:AE:D2:75:56"
+            ]
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "vn.fractal.murad.dev",
+            "sha256_cert_fingerprints": [
+                "41:A5:B3:B4:02:DD:99:F9:F8:56:7F:FB:52:47:94:13:75:DC:C6:D6:EA:B0:8A:48:4B:8B:CC:63:B9:EC:8A:F7"
+            ]
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "vn.fractal.murad",
+            "sha256_cert_fingerprints": [
+                "41:A5:B3:B4:02:DD:99:F9:F8:56:7F:FB:52:47:94:13:75:DC:C6:D6:EA:B0:8A:48:4B:8B:CC:63:B9:EC:8A:F7"
+            ]
+        }
+    }
+]

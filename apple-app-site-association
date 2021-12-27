@@ -1,0 +1,37 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "8G36CZST9S.vn.fractal.muradapp",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "8G36CZST9S.vn.fractal.murad",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "8G36CZST9S.vn.fractal.murad.dev",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "3Z3LF2XVPS.vn.fractal.murad",
+                "paths": [
+                    "*"
+                ]
+            },
+            {
+                "appID": "3Z3LF2XVPS.vn.fractal.murad.dev",
+                "paths": [
+                    "*"
+                ]
+            }
+        ]
+    }
+}

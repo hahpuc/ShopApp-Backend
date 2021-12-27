@@ -31,6 +31,12 @@
                 "paths": [
                     "*"
                 ]
+            },
+            {
+                "appID": "3Z3LF2XVPS.vn.fractal.murad.ecommerce",
+                "paths": [
+                    "*"
+                ]
             }
         ]
     }

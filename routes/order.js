@@ -1,5 +1,5 @@
 const express = require('express');
-const { createOrder, setToShipOrder, setCompleteOrder, getAllOrders, getOrderById, getOrdersByStatusCode, cancelOrder } = require('../controller/order.js');
+const { createOrder, setToShipOrder, setCompleteOrder, getAllOrders, getOrderById, getOrdersByStatusCode, cancelOrder, getOrderByIdUsUser } = require('../controller/order.js');
 
 const auth = require('../middleware/auth.js')
 const router = express.Router();
@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/create-order', auth, createOrder);
 router.get('/order/:id', getOrderById);
 router.get('/get-order', getAllOrders);
+router.get('/get-order-iduser/:id', getOrderByIdUsUser);
 router.put('/ship-order', setToShipOrder);
 router.put('/complete-order', setCompleteOrder);
 router.put('/cancel-order', cancelOrder);

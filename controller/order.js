@@ -259,6 +259,33 @@ const cancelOrder = async (req, res) =>{
 }
 //#endregion
 
+//#region get order by idUser
+const getOrderByIdUsUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const order = await Order.find({ userId: id }).populate('userId').populate('items.productId');
+
+        if (order.length == 0) {
+            return res.status(StatusCode.ResourceNotFound).json({
+                code: StatusCode.ResourceNotFound,
+                error: `No order with User id ${id}`
+            })
+        }
+
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: order
+        })
+    } catch (error) {
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            error: error.message
+        })
+    }
+}
+//#endregion
+
 module.exports = {
     createOrder,
     getAllOrders,
@@ -267,4 +294,5 @@ module.exports = {
     getOrderById,
     getOrdersByStatusCode,
     cancelOrder,
+    getOrderByIdUsUser,
 }

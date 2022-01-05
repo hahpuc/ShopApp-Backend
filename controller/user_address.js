@@ -126,10 +126,26 @@ const setDefaultAddress = async (req, res) => {
     }
 }
 
+const getUserAddresses = async (req, res) => {
+    try {
+        var currentUser = await User.findById({ _id: req.userId })
+        res.status(StatusCode.SuccessStatus).json({
+            code: StatusCode.SuccessStatus,
+            data: currentUser.shipping_address,
+        });
+    } catch (error) {
+        res.status(StatusCode.ResourceNotFound).json({
+            code: StatusCode.ResourceNotFound,
+            error: error.message,
+        })
+    }
+}
+
 
 module.exports = {
     createShippingAddress,
     updateShippingAdress,
     deleteShippingAddress,
     setDefaultAddress,
+    getUserAddresses,
 }

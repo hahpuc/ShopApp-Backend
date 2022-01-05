@@ -24,7 +24,7 @@ const createOrder = async (req, res) => {
         ];
 
         const order = Order({
-            _id: orderId,
+            order_code: orderId,
             status_code: 1,
             status_list,
             userId: req.userId,
@@ -39,6 +39,8 @@ const createOrder = async (req, res) => {
             order_time: currentTime,
         })
 
+        console.log(order);
+
         await order.save()
 
         res.status(StatusCode.SuccessStatus).json({
@@ -47,6 +49,7 @@ const createOrder = async (req, res) => {
             data: order
         })
     } catch (error) {
+        console.log(error);
         res.status(StatusCode.PayloadIsInvalid).json({
             code: StatusCode.PayloadIsInvalid,
             error: error.message
@@ -215,7 +218,7 @@ const getOrdersByStatusCode = async (req, res) => {
 }
 
 //#region cancel order 
-const cancelOrder = async (req, res) =>{
+const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.body;
 

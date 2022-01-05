@@ -1,6 +1,6 @@
 const express = require('express');
 const { getAllUsers, logout, refreshToken, signin, signup } = require('../controller/user_authen.js');
-const { createShippingAddress, updateShippingAdress, deleteShippingAddress, setDefaultAddress } = require('../controller/user_address.js');
+const { createShippingAddress, updateShippingAdress, deleteShippingAddress, setDefaultAddress, getUserAddresses } = require('../controller/user_address.js');
 const { setDefaultPaymentMethod } = require('../controller/user_payment.js');
 
 const auth = require('../middleware/auth.js');
@@ -19,5 +19,6 @@ router.put('/update-address/:id', auth, updateShippingAdress)
 router.delete('/delete-address/:id', auth, deleteShippingAddress)
 router.post('/set-default-address/:id', auth, setDefaultAddress)
 router.post('/set-default-payment', auth, setDefaultPaymentMethod)
+router.get('/user-adresses', auth, getUserAddresses)
 
 module.exports = router;

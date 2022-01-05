@@ -4,6 +4,7 @@ const { ObjectID } = mongoose.Schema.Types;
 
 const orderSchema = mongoose.Schema(
     {
+        order_code: String,
         status_code: Number,
         status_list: [
             {
@@ -22,7 +23,6 @@ const orderSchema = mongoose.Schema(
         paid: Boolean,
         items: [
             {
-                _id: Number,
                 productId: { type: ObjectID, ref: "Product", },
                 quantity: Number,
             }
